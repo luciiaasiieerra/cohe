@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoFamily</title>
     <style>
-        :root { --primary: #006D77; --bg: #F8F9FA; --danger: #E63946; --danger-bg: #FAD2D5; }
+        :root { --primary: #006D77; --bg: #F8F9FA; --danger: #E63946; --danger-bg: #FAD2D5; --edit: #83C5BE; }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; color: #1D3557;}
         header { background: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
         .container { padding: 20px; }
@@ -13,14 +13,21 @@
         .user-selector { background: #E0F2F1; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
         label { font-weight: bold; display: block; margin-top: 10px; }
         select, input { width: 100%; padding: 12px; margin: 8px 0 15px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
-        button { width: 100%; padding: 16px; background: var(--primary); color: white; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; }
+        
+        button { width: 100%; padding: 16px; background: var(--primary); color: white; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;}
         button:disabled { background: #bbb; cursor: not-allowed; }
+        
         .alert { background: var(--danger-bg); color: var(--danger); padding: 15px; border-radius: 8px; display: none; margin-bottom: 15px; border-left: 5px solid var(--danger); font-size: 14px; }
         .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 10px 0; border-top: 1px solid #ddd; }
         .nav-item { flex: 1; text-align: center; cursor: pointer; color: #666; font-size: 14px; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
         .section { display: none; }
         .section.active { display: block; }
+
+        /* Botones de acción en la tarjeta */
+        .card-actions { display: flex; gap: 10px; margin-top: 12px; }
+        .btn-edit { background: var(--edit); color: #1D3557; padding: 8px; font-size: 14px; width: 50%; }
+        .btn-delete { background: var(--danger-bg); color: var(--danger); padding: 8px; font-size: 14px; width: 50%; }
     </style>
 </head>
 <body>
@@ -39,11 +46,11 @@
 
     <div id="tab-home" class="section active">
         <h3>Próximos Viajes</h3>
-        <div id="bookingsList">Cargando agenda familiar...</div>
+        <div id="bookingsList">Cargando agenda...</div>
     </div>
 
     <div id="tab-book" class="section">
-        <h3>Nueva Reserva</h3>
+        <h3 id="formTitle">Nueva Reserva</h3>
         <label>Coche</label>
         <select id="carSelect" onchange="checkInsurance()">
             <option value="" disabled selected>Selecciona coche...</option>
@@ -52,7 +59,7 @@
         </select>
 
         <div id="insuranceAlert" class="alert">
-            ⚠️ <strong>Sin Seguro:</strong> Yolanda debe autorizarte para este coche.
+            ⚠️ <strong>Sin Seguro:</strong> Yolanda debe autorizarte.
         </div>
 
         <label>¿A dónde vas?</label>
@@ -71,15 +78,16 @@
 
 <script>
     let permissions = [];
+    let editingId = null; // Variable para saber si estamos creando o editando
 
     async function loadData() {
         try {
             const res = await fetch('/api/permissions');
-            if (!res.ok) throw new Error("Error de conexión");
+            if (!res.ok) throw new Error("Error");
             permissions = await res.json();
             loadBookings();
         } catch (e) {
-            document.getElementById('bookingsList').innerHTML = "<p style='color:red'>⚠️ Error al conectar con Neon. Revisa la URL en server.js.</p>";
+            document.getElementById('bookingsList').innerHTML = "<p style='color:red'>⚠️ Error al conectar.</p>";
         }
     }
 
@@ -90,8 +98,6 @@
         const btn = document.getElementById('bookBtn');
 
         if (!car) return;
-
-        // Comprobamos permisos cargados de Neon
         const canDrive = permissions.some(p => p.car === car && p.user_name === user);
 
         if (canDrive) {
@@ -103,6 +109,37 @@
         }
     }
 
+    // ELIMINAR RESERVA
+    async function deleteBooking(id) {
+        if (!confirm("¿Estás segura de que quieres cancelar este viaje?")) return;
+        
+        const res = await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            loadBookings();
+        } else {
+            alert("Error al borrar el viaje.");
+        }
+    }
+
+    // PREPARAR FORMULARIO PARA EDITAR
+    function editBooking(id, car, destination, datetime, userName) {
+        editingId = id; // Guardamos el ID que estamos editando
+        
+        // Rellenamos el formulario
+        document.getElementById('currentUser').value = userName;
+        document.getElementById('carSelect').value = car;
+        document.getElementById('destInput').value = destination;
+        document.getElementById('dateInput').value = datetime;
+        
+        // Cambiamos textos
+        document.getElementById('formTitle').innerText = "✏️ Editando Reserva";
+        document.getElementById('bookBtn').innerText = "Guardar Cambios";
+        
+        checkInsurance();
+        switchTab('book'); // Vamos a la pestaña de reserva
+    }
+
+    // ENVIAR FORMULARIO (SIRVE PARA CREAR Y PARA EDITAR)
     async function submitBooking() {
         const user = document.getElementById('currentUser').value;
         const car = document.getElementById('carSelect').value;
@@ -111,18 +148,22 @@
 
         if (!destination || !datetime) return alert("Faltan datos");
 
-        const res = await fetch('/api/bookings', {
-            method: 'POST',
+        // Si hay editingId, hacemos PUT (actualizar). Si no, POST (crear nuevo).
+        const method = editingId ? 'PUT' : 'POST';
+        const url = editingId ? `/api/bookings/${editingId}` : '/api/bookings';
+
+        const res = await fetch(url, {
+            method: method,
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ car, user, destination, datetime })
         });
 
         if (res.ok) {
-            alert("¡Reserva guardada!");
-            document.getElementById('destInput').value = '';
+            alert(editingId ? "¡Cambios guardados!" : "¡Reserva guardada!");
+            resetForm();
             switchTab('home');
         } else {
-            alert("No tienes permiso para este coche");
+            alert("Error: No tienes permiso para este coche");
         }
     }
 
@@ -131,22 +172,48 @@
         const res = await fetch('/api/bookings');
         const bookings = await res.json();
         list.innerHTML = bookings.length ? '' : 'No hay viajes.';
+        
         bookings.forEach(b => {
             const fecha = new Date(b.datetime).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+            
+            // Añadimos los botones de Editar y Borrar
             list.innerHTML += `<div class="card">
                 <small style="color:var(--primary); font-weight:bold;">${fecha}</small><br>
                 <strong>${b.user_name}</strong> - ${b.car}<br>
                 📍 ${b.destination}
+                
+                <div class="card-actions">
+                    <button class="btn-edit" onclick="editBooking(${b.id}, '${b.car}', '${b.destination}', '${b.datetime}', '${b.user_name}')">✏️ Editar</button>
+                    <button class="btn-delete" onclick="deleteBooking(${b.id})">🗑️ Borrar</button>
+                </div>
             </div>`;
         });
+    }
+
+    function resetForm() {
+        editingId = null;
+        document.getElementById('destInput').value = '';
+        document.getElementById('dateInput').value = '';
+        document.getElementById('carSelect').value = '';
+        document.getElementById('formTitle').innerText = "Nueva Reserva";
+        document.getElementById('bookBtn').innerText = "Confirmar Reserva";
+        document.getElementById('bookBtn').disabled = true;
     }
 
     function switchTab(tabId) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
         document.getElementById('tab-' + tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-        if(tabId === 'home') loadBookings();
+        
+        // Colorear el icono del menú inferior correcto
+        if(tabId === 'home') {
+            document.querySelectorAll('.nav-item')[0].classList.add('active');
+            loadBookings();
+        } else {
+            document.querySelectorAll('.nav-item')[1].classList.add('active');
+            // Si entramos a reservar desde el menú y no estamos editando, limpiamos el formulario
+            if(!editingId) resetForm();
+        }
     }
 
     loadData();
