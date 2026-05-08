@@ -5,52 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoFamily</title>
     <style>
-        :root {
-            --primary: #006D77;
-            --bg: #F8F9FA;
-            --dark: #1D3557;
-            --danger: #E63946;
-            --danger-bg: #FAD2D5;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            margin: 0; padding-bottom: 80px;
-        }
-        header {
-            background: white; padding: 20px;
-            display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        header h1 { margin: 0; font-size: 22px; color: var(--primary); }
+        :root { --primary: #006D77; --bg: #F8F9FA; --danger: #E63946; --danger-bg: #FAD2D5; }
+        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; }
+        header { background: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
         .container { padding: 20px; }
-        .card {
-            background: white; border-radius: 15px; padding: 15px;
-            margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        .user-selector { margin-bottom: 20px; padding: 15px; background: #E0F2F1; border-radius: 12px; }
-        label { font-weight: bold; display: block; margin-top: 10px; }
-        input, select {
-            width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 15px;
-            border: 1px solid #ddd; border-radius: 10px; font-size: 16px; box-sizing: border-box;
-        }
-        button {
-            width: 100%; background: var(--primary); color: white;
-            border: none; padding: 16px; border-radius: 10px;
-            font-size: 16px; font-weight: bold; cursor: pointer;
-        }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        .alert {
-            background: var(--danger-bg); color: var(--danger);
-            padding: 15px; border-radius: 10px; margin-bottom: 20px;
-            display: none; border-left: 5px solid var(--danger);
-        }
-        .bottom-nav {
-            position: fixed; bottom: 0; width: 100%; background: white;
-            display: flex; justify-content: space-around; padding: 12px 0;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        }
-        .nav-item { text-align: center; color: #666; cursor: pointer; flex: 1; }
+        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .user-selector { background: #E0F2F1; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
+        select, input, button { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
+        button { background: var(--primary); color: white; font-weight: bold; border: none; cursor: pointer; }
+        button:disabled { background: #bbb; cursor: not-allowed; }
+        .alert { background: var(--danger-bg); color: var(--danger); padding: 15px; border-radius: 8px; display: none; margin-bottom: 15px; border-left: 5px solid var(--danger); }
+        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 10px 0; border-top: 1px solid #ddd; }
+        .nav-item { flex: 1; text-align: center; cursor: pointer; color: #666; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
         .section { display: none; }
         .section.active { display: block; }
@@ -58,139 +24,125 @@
 </head>
 <body>
 
-    <header>
-        <h1>🚗 AutoFamily</h1>
-        <div style="font-size: 20px;">🔔</div>
-    </header>
+<header><h1>🚗 AutoFamily</h1></header>
 
-    <div class="container">
-        <div class="user-selector">
-            <label>¿Quién eres?</label>
-            <select id="currentUser" onchange="checkInsurance()">
-                <option value="Lucia">Lucía</option>
-                <option value="Alba">Alba</option>
-                <option value="Yolanda">Yolanda</option>
-            </select>
-        </div>
-
-        <div id="tab-home" class="section active">
-            <h3>Próximos Viajes</h3>
-            <div id="bookingsList">Cargando la agenda familiar...</div>
-        </div>
-
-        <div id="tab-book" class="section">
-            <h3>Nueva Reserva</h3>
-            
-            <label>Coche</label>
-            <select id="carSelect" onchange="checkInsurance()">
-                <option value="" disabled selected>Elige un coche...</option>
-                <option value="Zafira">Zafira</option>
-                <option value="Peugeot">Peugeot</option>
-            </select>
-
-            <div id="insuranceAlert" class="alert">
-                ⚠️ <strong>Seguro Requerido</strong><br>
-                No estás en la póliza de este coche. Habla con Yolanda para que te incluya.
-            </div>
-
-            <label>¿A dónde vas?</label>
-            <input type="text" id="destInput" placeholder="Ej: Universidad, Compra...">
-
-            <label>¿Cuándo?</label>
-            <input type="datetime-local" id="dateInput">
-
-            <button id="bookBtn" onclick="submitBooking()" disabled>Confirmar Reserva</button>
-        </div>
+<div class="container">
+    <div class="user-selector">
+        <label><strong>¿Quién eres hoy?</strong></label>
+        <select id="currentUser" onchange="checkInsurance()">
+            <option value="Lucia">Lucía</option>
+            <option value="Alba">Alba</option>
+            <option value="Yolanda">Yolanda</option>
+        </select>
     </div>
 
-    <nav class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('home')">🏠<br>Inicio</div>
-        <div class="nav-item" onclick="switchTab('book')">📅<br>Reservar</div>
-    </nav>
+    <div id="tab-home" class="section active">
+        <h3>Próximos Viajes</h3>
+        <div id="bookingsList">Cargando agenda...</div>
+    </div>
 
-    <script>
-        let permissions = [];
+    <div id="tab-book" class="section">
+        <h3>Nueva Reserva</h3>
+        <label>Coche</label>
+        <select id="carSelect" onchange="checkInsurance()">
+            <option value="" disabled selected>Selecciona coche...</option>
+            <option value="Zafira">Zafira</option>
+            <option value="Peugeot">Peugeot</option>
+        </select>
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
-            if (tabId === 'home') loadBookings();
-        }
+        <div id="insuranceAlert" class="alert">
+            ⚠️ <strong>Sin Seguro:</strong> Yolanda debe autorizarte para este coche.
+        </div>
 
-        async function loadPermissions() {
+        <input type="text" id="destInput" placeholder="¿A dónde vas?">
+        <input type="datetime-local" id="dateInput">
+        <button id="bookBtn" onclick="submitBooking()" disabled>Confirmar Reserva</button>
+    </div>
+</div>
+
+<div class="nav">
+    <div class="nav-item active" onclick="switchTab('home')">🏠<br>Inicio</div>
+    <div class="nav-item" onclick="switchTab('book')">📅<br>Reservar</div>
+</div>
+
+<script>
+    let permissions = [];
+
+    async function loadData() {
+        try {
             const res = await fetch('/api/permissions');
             permissions = await res.json();
-            checkInsurance(); 
+            console.log("Permisos cargados desde el servidor:", permissions);
+            loadBookings();
+        } catch (e) { console.error("Error cargando datos:", e); }
+    }
+
+    function checkInsurance() {
+        const user = document.getElementById('currentUser').value;
+        const car = document.getElementById('carSelect').value;
+        const alertBox = document.getElementById('insuranceAlert');
+        const btn = document.getElementById('bookBtn');
+
+        if (!car) return;
+
+        // Buscamos coincidencia exacta
+        const canDrive = permissions.some(p => p.car === car && p.user_name === user);
+        
+        console.log(`Chequeando: ${user} + ${car} -> ¿Puede conducir?: ${canDrive}`);
+
+        if (canDrive) {
+            alertBox.style.display = 'none';
+            btn.disabled = false;
+        } else {
+            alertBox.style.display = 'block';
+            btn.disabled = true;
         }
+    }
 
-        function checkInsurance() {
-            const user = document.getElementById('currentUser').value;
-            const car = document.getElementById('carSelect').value;
-            const alertBox = document.getElementById('insuranceAlert');
-            const btn = document.getElementById('bookBtn');
+    async function submitBooking() {
+        const user = document.getElementById('currentUser').value;
+        const car = document.getElementById('carSelect').value;
+        const destination = document.getElementById('destInput').value;
+        const datetime = document.getElementById('dateInput').value;
 
-            if (!car) { btn.disabled = true; return; }
+        if (!destination || !datetime) return alert("Faltan datos");
 
-            // AQUÍ ESTABA EL ERROR: Cambiado p.user a p.user_name para Supabase
-            const canDrive = permissions.find(p => p.car === car && p.user_name === user);
+        const res = await fetch('/api/bookings', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ car, user, destination, datetime })
+        });
 
-            if (!canDrive) {
-                alertBox.style.display = 'block';
-                btn.disabled = true;
-            } else {
-                alertBox.style.display = 'none';
-                btn.disabled = false;
-            }
+        if (res.ok) {
+            alert("¡Reserva guardada!");
+            document.getElementById('destInput').value = '';
+            switchTab('home');
+        } else {
+            alert("Error al guardar");
         }
+    }
 
-        async function submitBooking() {
-            const user = document.getElementById('currentUser').value;
-            const car = document.getElementById('carSelect').value;
-            const destination = document.getElementById('destInput').value;
-            const datetime = document.getElementById('dateInput').value;
+    async function loadBookings() {
+        const list = document.getElementById('bookingsList');
+        const res = await fetch('/api/bookings');
+        const bookings = await res.json();
+        list.innerHTML = bookings.length ? '' : 'No hay viajes.';
+        bookings.forEach(b => {
+            list.innerHTML += `<div class="card">
+                <strong>${b.user_name}</strong> - ${b.car}<br>
+                📍 ${b.destination} | 🕒 ${b.datetime.replace('T', ' ')}
+            </div>`;
+        });
+    }
 
-            if (!destination || !datetime) return alert("Rellena todos los campos");
+    function switchTab(tabId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('tab-' + tabId).classList.add('active');
+        if(tabId === 'home') loadBookings();
+    }
 
-            const res = await fetch('/api/bookings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ car, user, destination, datetime })
-            });
-
-            if (res.ok) {
-                alert("¡Reservado!");
-                document.getElementById('destInput').value = '';
-                document.getElementById('carSelect').value = '';
-                checkInsurance(); // Resetea el botón tras reservar
-                switchTab('home');
-            } else {
-                const data = await res.json();
-                alert("Error: " + data.error);
-            }
-        }
-
-        async function loadBookings() {
-            const list = document.getElementById('bookingsList');
-            const res = await fetch('/api/bookings');
-            const bookings = await res.json();
-
-            list.innerHTML = bookings.length ? '' : '<p>No hay viajes aún.</p>';
-            bookings.forEach(b => {
-                const fecha = new Date(b.datetime).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
-                list.innerHTML += `
-                    <div class="card">
-                        <small style="color:var(--primary)">${fecha}</small><br>
-                        <strong>${b.user_name}</strong> usará el <strong>${b.car}</strong><br>
-                        📍 ${b.destination}
-                    </div>
-                `;
-            });
-        }
-
-        loadPermissions();
-        loadBookings();
-    </script>
+    // Arrancar la app
+    loadData();
+</script>
 </body>
 </html>
