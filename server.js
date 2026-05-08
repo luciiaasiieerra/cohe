@@ -1,93 +1,93 @@
 const express = require('express');
-const sqlite3 = require('sqlite3').verbose();
+const { Pool } = require('pg');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CONEXIÓN A SUPABASE
+// ¡OJO! Sustituye la URL de abajo por la tuya y pon tu contraseña real sin los corchetes []
+const pool = new Pool({
+  connectionString: "postgresql://postgres:f30042004J.1234@db.scsqndkrqskeqflwsuom.supabase.co:5432/postgres", 
+  ssl: { rejectUnauthorized: false }
+});
+
 // Configuración para leer JSON y servir la carpeta "public"
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Inicializar la base de datos SQLite (se guarda en un archivo local)
-const db = new sqlite3.Database('./familia.db', (err) => {
-    if (err) console.error("Error al abrir la base de datos:", err);
-    else console.log("Base de datos conectada correctamente.");
-});
+// Crear las tablas y establecer las reglas si no existen (ahora en la nube)
+async function initDB() {
+    try {
+        await pool.query(`CREATE TABLE IF NOT EXISTS bookings (
+            id SERIAL PRIMARY KEY,
+            car TEXT,
+            user_name TEXT,
+            destination TEXT,
+            datetime TEXT
+        )`);
+        
+        await pool.query(`CREATE TABLE IF NOT EXISTS permissions (
+            car TEXT,
+            user_name TEXT
+        )`);
 
-// Configuración inicial de las tablas y las reglas de seguro
-db.serialize(() => {
-    // Crear tabla de reservas
-    db.run(`CREATE TABLE IF NOT EXISTS bookings (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        car TEXT,
-        user TEXT,
-        destination TEXT,
-        datetime TEXT
-    )`);
+        // Reset de permisos con las reglas que pediste para la familia
+        await pool.query(`DELETE FROM permissions`);
+        await pool.query(`INSERT INTO permissions (car, user_name) VALUES 
+            ('Zafira', 'Yolanda'), ('Peugeot', 'Yolanda'),
+            ('Zafira', 'Alba'), ('Peugeot', 'Lucia')`);
+            
+        console.log("Base de datos conectada a Supabase y reglas familiares actualizadas.");
+    } catch (error) {
+        console.error("Error conectando a la base de datos:", error);
+    }
+}
 
-    // Crear tabla de permisos (seguros)
-    db.run(`CREATE TABLE IF NOT EXISTS permissions (
-        car TEXT,
-        user TEXT
-    )`);
-
-    // Actualizamos las reglas específicas que pediste:
-    // Lucía -> Peugeot | Alba -> Zafira | Yolanda -> Ambos
-    db.run(`DELETE FROM permissions`);
-    const perms = [
-        ['Zafira', 'Yolanda'], ['Peugeot', 'Yolanda'], // Yolanda: Ambos
-        ['Zafira', 'Alba'],                            // Alba: Solo Zafira
-        ['Peugeot', 'Lucia']                           // Lucía: Solo Peugeot
-    ];
-    
-    const stmt = db.prepare(`INSERT INTO permissions (car, user) VALUES (?, ?)`);
-    perms.forEach(p => stmt.run(p));
-    stmt.finalize();
-    console.log("Reglas de seguro actualizadas.");
-});
+initDB();
 
 // --- RUTAS DE LA API ---
 
 // 1. Obtener todas las reservas (para mostrar en el Inicio)
-app.get('/api/bookings', (req, res) => {
-    db.all(`SELECT * FROM bookings ORDER BY datetime ASC`, [], (err, rows) => {
-        if (err) res.status(500).json({ error: err.message });
-        else res.json(rows);
-    });
+app.get('/api/bookings', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM bookings ORDER BY datetime ASC');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// 2. Obtener la lista de permisos (para que el frontend sepa quién puede conducir qué)
-app.get('/api/permissions', (req, res) => {
-    db.all(`SELECT * FROM permissions`, [], (err, rows) => {
-        if (err) res.status(500).json({ error: err.message });
-        else res.json(rows);
-    });
+// 2. Obtener la lista de permisos (para que el frontend sepa quién conduce qué)
+app.get('/api/permissions', async (req, res) => {
+    try {
+        const result = await pool.query('SELECT * FROM permissions');
+        res.json(result.rows);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // 3. Crear una nueva reserva (incluye verificación de seguro en el servidor)
-app.post('/api/bookings', (req, res) => {
+app.post('/api/bookings', async (req, res) => {
     const { car, user, destination, datetime } = req.body;
     
-    // Verificamos si el usuario tiene permiso para ese coche antes de guardar
-    db.get(`SELECT * FROM permissions WHERE car = ? AND user = ?`, [car, user], (err, row) => {
-        if (err) {
-            return res.status(500).json({ error: err.message });
-        }
-        
-        if (!row) {
+    try {
+        // Verificamos en la base de datos si el usuario tiene permiso para ese coche
+        const perm = await pool.query('SELECT * FROM permissions WHERE car = $1 AND user_name = $2', [car, user]);
+
+        if (perm.rows.length === 0) {
             return res.status(403).json({ error: "Lo siento, no tienes permiso de seguro para este coche." });
         }
-        
-        // Si tiene permiso, guardamos la reserva
-        db.run(`INSERT INTO bookings (car, user, destination, datetime) VALUES (?, ?, ?, ?)`, 
-            [car, user, destination, datetime], 
-            function(err) {
-                if (err) res.status(500).json({ error: err.message });
-                else res.json({ id: this.lastID, car, user, destination, datetime });
-            }
-        );
-    });
+
+        // Si tiene permiso, guardamos la reserva permanentemente en Supabase
+        await pool.query('INSERT INTO bookings (car, user_name, destination, datetime) VALUES ($1, $2, $3, $4)', 
+            [car, user, destination, datetime]);
+            
+        res.json({ success: true });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
 // Iniciar el servidor
