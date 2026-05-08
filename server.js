@@ -23,9 +23,7 @@ async function initDB() {
         )`);
         await client.query(`CREATE TABLE IF NOT EXISTS permissions (car TEXT, user_name TEXT)`);
         
-        // Columna nueva para recordar los días cancelados de viajes permanentes
-        try { await client.query(`ALTER TABLE bookings ADD COLUMN cancelled_dates TEXT DEFAULT ''`); } catch(e){}
-        
+        // Verificamos permisos básicos la primera vez
         const permCheck = await client.query('SELECT count(*) FROM permissions');
         if (parseInt(permCheck.rows[0].count) === 0) {
             await client.query(`INSERT INTO permissions (car, user_name) VALUES 
@@ -66,16 +64,6 @@ app.put('/api/bookings/:id', async (req, res) => {
     const { car, user, destination, datetime, return_datetime, recurrence } = req.body;
     await pool.query('UPDATE bookings SET car=$1, user_name=$2, destination=$3, datetime=$4, return_datetime=$5, recurrence=$6 WHERE id=$7', 
         [car, user, destination, datetime, return_datetime, recurrence, req.params.id]);
-    res.json({ success: true });
-});
-
-// NUEVO: Cancelar solo un día de un viaje permanente
-app.post('/api/bookings/:id/cancel_instance', async (req, res) => {
-    const { date } = req.body;
-    const b = await pool.query('SELECT cancelled_dates FROM bookings WHERE id=$1', [req.params.id]);
-    let arr = b.rows[0].cancelled_dates ? b.rows[0].cancelled_dates.split(',').filter(Boolean) : [];
-    if (!arr.includes(date)) arr.push(date);
-    await pool.query('UPDATE bookings SET cancelled_dates=$1 WHERE id=$2', [arr.join(','), req.params.id]);
     res.json({ success: true });
 });
 
