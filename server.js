@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 
 // CONEXIÓN A NEON
 const pool = new Pool({
-  connectionString: "postgresql://postgres:f30042004J.1234@db.scsqndkrqskeqflwsuom.supabase.co:5432/postgres", 
+  connectionString: "postgresql://neondb_owner:npg_p7kZ0WFLcEnH@ep-green-rice-apzkp36u.c-7.us-east-1.aws.neon.tech/neondb?sslmode=require", 
   ssl: { rejectUnauthorized: false } // Requerido para Neon
 });
 
