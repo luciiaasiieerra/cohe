@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AutoFamily</title>
+    <style>
+        :root {
+            --primary: #006D77;
+            --secondary: #83C5BE;
+            --bg: #F8F9FA;
+            --dark: #1D3557;
+            --danger: #E63946;
+            --danger-bg: #FAD2D5;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--dark);
+            margin: 0; padding: 0; padding-bottom: 70px;
+        }
+        header {
+            background: white; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        header h1 { margin: 0; font-size: 24px; color: var(--primary); }
+        .container { padding: 20px; }
+        .card {
+            background: white; border-radius: 12px; padding: 15px;
+            margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .user-selector { margin-bottom: 20px; padding: 10px; background: #e9ecef; border-radius: 8px; }
+        
+        /* Formularios y Botones */
+        input, select {
+            width: 100%; padding: 12px; margin-top: 8px; margin-bottom: 16px;
+            border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box;
+            font-size: 16px;
+        }
+        button.btn-primary {
+            width: 100%; background: var(--primary); color: white;
+            border: none; padding: 15px; border-radius: 8px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        button.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        
+        /* Alerta de Seguro */
+        .alert {
+            background: var(--danger-bg); color: var(--danger);
+            padding: 12px; border-radius: 8px; margin-bottom: 16px;
+            font-weight: 500; font-size: 14px; display: none;
+        }
+
+        /* Navegación Inferior */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: white; display: flex; justify-content: space-around;
+            padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+        .nav-item {
+            text-align: center; color: #6c757d; cursor: pointer;
+            font-size: 14px; padding: 5px 15px; border-radius: 20px;
+        }
+        .nav-item.active { color: var(--primary); font-weight: bold; background: #E0F2F1; }
+        
+        /* Ocultar secciones */
+        .section { display: none; }
+        .section.active { display: block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>AutoFamily</h1>
+        <div style="font-size: 24px;">🔔</div>
+    </header>
+
+    <div class="container">
+        <div class="user-selector">
+            <label><strong>Usando la app como:</strong></label>
+            <select id="currentUser" onchange="checkInsurance()">
+                <option value="Yo">Yo</option>
+                <option value="Hermana">Hermana</option>
+                <option value="Mamá">Mamá</option>
+            </select>
+        </div>
+
+        <div id="tab-home" class="section active">
+            <h2>Próximos Viajes</h2>
+            <div id="bookingsList">Cargando viajes...</div>
+        </div>
+
+        <div id="tab-book" class="section">
+            <h2>Nueva Reserva</h2>
+            <p>Reserva un vehículo familiar para tu próximo viaje.</p>
+            
+            <label><strong>¿Qué coche?</strong></label>
+            <select id="carSelect" onchange="checkInsurance()">
+                <option value="" disabled selected>Selecciona un coche...</option>
+                <option value="Zafira">Zafira (7 Plazas)</option>
+                <option value="Peugeot">Peugeot (5 Plazas)</option>
+            </select>
+
+            <div id="insuranceAlert" class="alert">
+                ⚠️ <strong>Seguro Requerido</strong><br>
+                Actualmente no estás en la póliza de este coche. Habla con mamá para actualizar el seguro.
+            </div>
+
+            <label><strong>¿A dónde vas?</strong></label>
+            <input type="text" id="destInput" placeholder="Ej. Aeropuerto, Gimnasio...">
+
+            <label><strong>Fecha y Hora de inicio</strong></label>
+            <input type="datetime-local" id="dateInput">
+
+            <button id="bookBtn" class="btn-primary" onclick="submitBooking()" disabled>Confirmar Reserva</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('home')">🏠<br>Inicio</div>
+        <div class="nav-item" onclick="switchTab('book')">🚘<br>Reservar</div>
+    </div>
+
+    <script>
+        let permissions = [];
+
+        // Cambiar entre pantallas
+        function switchTab(tabId) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+            if (tabId === 'home') loadBookings();
+        }
+
+        // Cargar permisos desde el backend
+        async function loadPermissions() {
+            const res = await fetch('/api/permissions');
+            permissions = await res.json();
+        }
+
+        // Validar lógica del seguro al cambiar coche o usuario
+        function checkInsurance() {
+            const user = document.getElementById('currentUser').value;
+            const car = document.getElementById('carSelect').value;
+            const alertBox = document.getElementById('insuranceAlert');
+            const btn = document.getElementById('bookBtn');
+
+            if (!car) return;
+
+            // Busca si existe el par [coche, usuario] en la base de datos
+            const hasInsurance = permissions.find(p => p.car === car && p.user === user);
+
+            if (!hasInsurance) {
+                alertBox.style.display = 'block';
+                btn.disabled = true;
+            } else {
+                alertBox.style.display = 'none';
+                btn.disabled = false;
+            }
+        }
+
+        // Enviar la reserva al servidor
+        async function submitBooking() {
+            const user = document.getElementById('currentUser').value;
+            const car = document.getElementById('carSelect').value;
+            const destination = document.getElementById('destInput').value;
+            const datetime = document.getElementById('dateInput').value;
+
+            if (!car || !destination || !datetime) {
+                alert("Por favor, rellena todos los campos.");
+                return;
+            }
+
+            const res = await fetch('/api/bookings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ car, user, destination, datetime })
+            });
+
+            if (res.ok) {
+                alert("¡Reserva confirmada!");
+                document.getElementById('destInput').value = '';
+                document.getElementById('dateInput').value = '';
+                switchTab('home');
+            } else {
+                const data = await res.json();
+                alert("Error: " + data.error);
+            }
+        }
+
+        // Cargar las reservas en la pantalla de inicio
+        async function loadBookings() {
+            const list = document.getElementById('bookingsList');
+            const res = await fetch('/api/bookings');
+            const bookings = await res.json();
+
+            list.innerHTML = '';
+            if (bookings.length === 0) {
+                list.innerHTML = '<p>No hay viajes programados.</p>';
+                return;
+            }
+
+            bookings.forEach(b => {
+                const dateObj = new Date(b.datetime);
+                const dateStr = dateObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+                
+                list.innerHTML += `
+                    <div class="card">
+                        <div style="color: gray; font-size: 12px; margin-bottom: 5px;">${dateStr}</div>
+                        <strong>${b.user}</strong> en el <strong>${b.car}</strong><br>
+                        📍 ${b.destination}
+                    </div>
+                `;
+            });
+        }
+
+        // Inicializar
+        loadPermissions();
+        loadBookings();
+    </script>
+</body>
+</html>
