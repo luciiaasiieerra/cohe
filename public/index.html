@@ -4,81 +4,293 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AutoFamily</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
-        :root { --primary: #006D77; --bg: #F8F9FA; --danger: #E63946; --danger-bg: #FAD2D5; --edit: #83C5BE; }
-        body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 80px; color: #1D3557;}
-        header { background: white; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
-        .container { padding: 20px; }
-        .card { background: white; border-radius: 15px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .user-selector { background: #E0F2F1; padding: 15px; border-radius: 12px; margin-bottom: 20px; }
-        label { font-weight: bold; display: block; margin-top: 10px; }
-        select, input { width: 100%; padding: 12px; margin: 8px 0 15px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; box-sizing: border-box; }
+        :root { 
+            --primary: #006D77; 
+            --primary-light: #E0F2F1;
+            --secondary: #83C5BE;
+            --bg: #F8F9FA; 
+            --text-dark: #112A46;
+            --text-light: #6C757D;
+            --danger: #B71C1C; 
+            --danger-bg: #FFEBEE; 
+            --white: #FFFFFF;
+        }
         
-        button { width: 100%; padding: 16px; background: var(--primary); color: white; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 16px;}
-        button:disabled { background: #bbb; cursor: not-allowed; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg); 
+            margin: 0; 
+            padding-bottom: 90px; 
+            color: var(--text-dark);
+        }
+
+        /* HEADER */
+        header { 
+            background: var(--bg); 
+            padding: 15px 20px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .header-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 800; color: var(--primary); }
+        .header-title img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
         
-        .alert { background: var(--danger-bg); color: var(--danger); padding: 15px; border-radius: 8px; display: none; margin-bottom: 15px; border-left: 5px solid var(--danger); font-size: 14px; }
-        .nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; padding: 10px 0; border-top: 1px solid #ddd; }
-        .nav-item { flex: 1; text-align: center; cursor: pointer; color: #666; font-size: 14px; }
+        /* SELECTOR DE USUARIO (PARA PROBAR) */
+        .user-switcher select {
+            background: var(--primary-light);
+            color: var(--primary);
+            border: none;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            outline: none;
+        }
+
+        .container { padding: 0 20px; }
+        h1, h2, h3 { margin-top: 0; }
+        .section-title { font-size: 28px; font-weight: 800; margin-bottom: 5px; color: var(--text-dark); }
+        .section-subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 20px; }
+
+        /* CARDS DE COCHES (HOME) */
+        .car-card {
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .car-card-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px; }
+        .car-name { font-size: 22px; font-weight: bold; margin: 0; }
+        .car-type { font-size: 12px; color: var(--text-light); }
+        .status-badge {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex; align-items: center; gap: 5px;
+        }
+        
+        /* TIMELINE (NEXT TRIPS) */
+        .timeline { margin-top: 20px; padding-left: 10px; border-left: 2px solid #E9ECEF; }
+        .timeline-item { position: relative; padding-left: 25px; margin-bottom: 25px; }
+        .timeline-icon {
+            position: absolute; left: -16px; top: 0;
+            width: 30px; height: 30px;
+            background: var(--secondary); color: white;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 16px; border: 3px solid var(--bg);
+        }
+        .trip-header { display: flex; justify-content: space-between; align-items: flex-start; }
+        .trip-user { font-weight: bold; font-size: 16px; }
+        .trip-dest { color: var(--text-dark); font-size: 15px; margin-top: 3px; }
+        .trip-car { color: var(--text-light); font-size: 13px; display: flex; align-items: center; gap: 4px; margin-top: 5px; }
+        .trip-time { text-align: right; font-size: 13px; color: var(--primary); font-weight: bold; }
+        
+        .trip-actions { margin-top: 10px; display: flex; gap: 10px; }
+        .action-btn { background: none; border: none; font-size: 13px; color: var(--text-light); cursor: pointer; padding: 0; display: flex; align-items: center; gap: 3px; }
+        .action-btn:hover { color: var(--primary); }
+
+        /* FORMULARIO DE RESERVA */
+        .car-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px; }
+        .car-select-box {
+            background: var(--white);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .car-select-box.active { border-color: var(--primary); background: #F0FAF9; }
+        .car-select-box span { display: block; font-weight: bold; margin-top: 10px; }
+        
+        label { font-weight: 600; font-size: 14px; display: block; margin-bottom: 8px; margin-top: 20px; }
+        input {
+            width: 100%; padding: 15px; border-radius: 10px;
+            border: 1px solid #DEE2E6; font-size: 15px; box-sizing: border-box;
+            background: var(--white); outline: none;
+        }
+        input:focus { border-color: var(--primary); }
+        
+        .btn-main {
+            width: 100%; padding: 16px; margin-top: 30px;
+            background: var(--primary); color: white;
+            border: none; border-radius: 30px;
+            font-size: 16px; font-weight: bold; cursor: pointer;
+        }
+        .btn-main:disabled { background: #BDBDBD; cursor: not-allowed; }
+        
+        .alert {
+            background: var(--danger-bg); color: var(--danger);
+            padding: 15px; border-radius: 10px; display: none; margin-top: 15px;
+            font-size: 13px; line-height: 1.4;
+            display: flex; gap: 10px; align-items: flex-start;
+        }
+
+        /* BOTTOM NAVIGATION */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%;
+            background: var(--white); display: flex; justify-content: space-around;
+            padding: 15px 0 25px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05);
+            border-radius: 20px 20px 0 0;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-light); cursor: pointer; font-size: 12px; gap: 4px;
+        }
         .nav-item.active { color: var(--primary); font-weight: bold; }
+        .nav-item.active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
+
+        /* UTILIDADES */
         .section { display: none; }
         .section.active { display: block; }
-
-        /* Botones de acción en la tarjeta */
-        .card-actions { display: flex; gap: 10px; margin-top: 12px; }
-        .btn-edit { background: var(--edit); color: #1D3557; padding: 8px; font-size: 14px; width: 50%; }
-        .btn-delete { background: var(--danger-bg); color: var(--danger); padding: 8px; font-size: 14px; width: 50%; }
     </style>
 </head>
 <body>
 
-<header><h1>🚗 AutoFamily</h1></header>
-
-<div class="container">
-    <div class="user-selector">
-        <label>¿Quién eres hoy?</label>
+<header>
+    <div class="header-title">
+        <span style="font-size: 28px;">🚗</span> AutoFamily
+    </div>
+    <div class="user-switcher">
         <select id="currentUser" onchange="checkInsurance()">
             <option value="Lucia">Lucía</option>
             <option value="Alba">Alba</option>
             <option value="Yolanda">Yolanda</option>
         </select>
     </div>
+</header>
 
+<div class="container">
+    
     <div id="tab-home" class="section active">
-        <h3>Próximos Viajes</h3>
-        <div id="bookingsList">Cargando agenda...</div>
+        <h1 class="section-title">Family Garage</h1>
+        <p class="section-subtitle">Buenos días. Los vehículos están listos.</p>
+
+        <div class="car-card">
+            <div class="car-card-header">
+                <div>
+                    <h3 class="car-name">Zafira</h3>
+                    <span class="car-type">Familial MPV • 7 Plazas</span>
+                </div>
+                <div class="status-badge">⛽ 85% Fuel</div>
+            </div>
+            <button class="btn-main" onclick="switchTab('book', 'Zafira')" style="margin-top:0; padding: 12px; border-radius: 10px;">
+                <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">calendar_month</span> Book for Later
+            </button>
+        </div>
+
+        <div class="car-card">
+            <div class="car-card-header">
+                <div>
+                    <h3 class="car-name">Peugeot</h3>
+                    <span class="car-type">Eléctrico • 5 Plazas</span>
+                </div>
+                <div class="status-badge" style="background: #E8F5E9; color: #2E7D32;">⚡ 92% Charged</div>
+            </div>
+            <button class="btn-main" onclick="switchTab('book', 'Peugeot')" style="margin-top:0; padding: 12px; border-radius: 10px;">
+                <span class="material-symbols-outlined" style="vertical-align: middle; font-size: 18px;">bolt</span> Book Now
+            </button>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
+            <h2 class="section-title" style="font-size: 22px;">Next Trips</h2>
+            <span style="color: var(--primary); font-weight: bold; font-size: 14px;">View Calendar</span>
+        </div>
+        
+        <div class="timeline" id="bookingsList">
+            <p style="color: var(--text-light); font-size: 14px;">Cargando agenda...</p>
+        </div>
     </div>
 
     <div id="tab-book" class="section">
-        <h3 id="formTitle">Nueva Reserva</h3>
-        <label>Coche</label>
-        <select id="carSelect" onchange="checkInsurance()">
-            <option value="" disabled selected>Selecciona coche...</option>
-            <option value="Zafira">Zafira</option>
-            <option value="Peugeot">Peugeot</option>
-        </select>
+        <h1 class="section-title" id="formTitle">New Booking</h1>
+        <p class="section-subtitle">Reserva un vehículo para tu próximo viaje.</p>
 
-        <div id="insuranceAlert" class="alert">
-            ⚠️ <strong>Sin Seguro:</strong> Yolanda debe autorizarte.
+        <label>Which car?</label>
+        <div class="car-selector-grid">
+            <div class="car-select-box" id="box-Zafira" onclick="selectCar('Zafira')">
+                <span class="material-symbols-outlined" style="font-size: 40px; color: var(--text-dark);">directions_car</span>
+                <span>Zafira</span>
+            </div>
+            <div class="car-select-box" id="box-Peugeot" onclick="selectCar('Peugeot')">
+                <span class="material-symbols-outlined" style="font-size: 40px; color: var(--text-dark);">electric_car</span>
+                <span>Peugeot</span>
+            </div>
+        </div>
+        
+        <input type="hidden" id="carSelect">
+
+        <div id="insuranceAlert" class="alert" style="display: none;">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+                <strong>Insurance Required</strong><br>
+                Actualmente no estás autorizada en la póliza de este coche. Habla con Yolanda para que te incluya.
+            </div>
         </div>
 
-        <label>¿A dónde vas?</label>
-        <input type="text" id="destInput" placeholder="Ej: Universidad, Compra...">
-        <label>¿Cuándo?</label>
+        <label>Where are you going?</label>
+        <input type="text" id="destInput" placeholder="e.g. Manchester Airport">
+        
+        <label>Date & Time</label>
         <input type="datetime-local" id="dateInput">
         
-        <button id="bookBtn" onclick="submitBooking()" disabled>Confirmar Reserva</button>
+        <button id="bookBtn" class="btn-main" onclick="submitBooking()" disabled>Confirm Booking</button>
+        <button class="btn-main" onclick="switchTab('home')" style="background: transparent; color: var(--text-dark); border: 2px solid var(--text-dark); margin-top: 15px;">Cancel</button>
+    </div>
+
+    <div id="tab-calendar" class="section">
+        <h1 class="section-title">Family Schedule</h1>
+        <p class="section-subtitle">Gestiona y mira la disponibilidad de la semana.</p>
+        <div id="calendarList"></div>
+    </div>
+
+    <div id="tab-settings" class="section">
+        <h1 class="section-title">Settings</h1>
+        <p class="section-subtitle">Fleet & Insurance</p>
+        
+        <div class="car-card">
+            <h3 style="margin-bottom: 5px;">Zafira <span class="status-badge" style="display:inline-block; float:right;">Active Policy</span></h3>
+            <hr style="border: none; border-top: 1px solid #EEE; margin: 15px 0;">
+            <p style="font-size: 12px; color: var(--text-light);">AUTHORIZED DRIVERS (Visual)</p>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Yolanda</span> <span style="color:var(--primary);">ON</span></div>
+            <div style="display:flex; justify-content:space-between;"><span>Alba</span> <span style="color:var(--primary);">ON</span></div>
+        </div>
+
+        <div class="car-card">
+            <h3 style="margin-bottom: 5px;">Peugeot <span class="status-badge" style="display:inline-block; float:right;">Shared Fleet</span></h3>
+            <hr style="border: none; border-top: 1px solid #EEE; margin: 15px 0;">
+            <p style="font-size: 12px; color: var(--text-light);">AUTHORIZED DRIVERS (Visual)</p>
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;"><span>Yolanda</span> <span style="color:var(--primary);">ON</span></div>
+            <div style="display:flex; justify-content:space-between;"><span>Lucía</span> <span style="color:var(--primary);">ON</span></div>
+        </div>
     </div>
 </div>
 
-<div class="nav">
-    <div class="nav-item active" onclick="switchTab('home')">🏠<br>Inicio</div>
-    <div class="nav-item" onclick="switchTab('book')">📅<br>Reservar</div>
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('home')">
+        <span class="material-symbols-outlined">home</span> Home
+    </div>
+    <div class="nav-item" onclick="switchTab('calendar')">
+        <span class="material-symbols-outlined">calendar_month</span> Calendar
+    </div>
+    <div class="nav-item" onclick="switchTab('book')">
+        <span class="material-symbols-outlined">directions_car</span> Book
+    </div>
+    <div class="nav-item" onclick="switchTab('settings')">
+        <span class="material-symbols-outlined">settings</span> Settings
+    </div>
 </div>
 
 <script>
     let permissions = [];
-    let editingId = null; // Variable para saber si estamos creando o editando
+    let editingId = null;
 
     async function loadData() {
         try {
@@ -87,8 +299,17 @@
             permissions = await res.json();
             loadBookings();
         } catch (e) {
-            document.getElementById('bookingsList').innerHTML = "<p style='color:red'>⚠️ Error al conectar.</p>";
+            console.error(e);
         }
+    }
+
+    // LÓGICA DE SELECCIÓN DE COCHES VISUAL
+    function selectCar(carName) {
+        document.getElementById('carSelect').value = carName;
+        document.getElementById('box-Zafira').classList.remove('active');
+        document.getElementById('box-Peugeot').classList.remove('active');
+        document.getElementById('box-' + carName).classList.add('active');
+        checkInsurance();
     }
 
     function checkInsurance() {
@@ -98,57 +319,45 @@
         const btn = document.getElementById('bookBtn');
 
         if (!car) return;
+
         const canDrive = permissions.some(p => p.car === car && p.user_name === user);
 
         if (canDrive) {
             alertBox.style.display = 'none';
             btn.disabled = false;
         } else {
-            alertBox.style.display = 'block';
+            alertBox.style.display = 'flex';
             btn.disabled = true;
         }
     }
 
-    // ELIMINAR RESERVA
     async function deleteBooking(id) {
-        if (!confirm("¿Estás segura de que quieres cancelar este viaje?")) return;
-        
-        const res = await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
-        if (res.ok) {
-            loadBookings();
-        } else {
-            alert("Error al borrar el viaje.");
-        }
+        if (!confirm("¿Cancelar este viaje?")) return;
+        await fetch(`/api/bookings/${id}`, { method: 'DELETE' });
+        loadBookings();
     }
 
-    // PREPARAR FORMULARIO PARA EDITAR
     function editBooking(id, car, destination, datetime, userName) {
-        editingId = id; // Guardamos el ID que estamos editando
-        
-        // Rellenamos el formulario
+        editingId = id;
         document.getElementById('currentUser').value = userName;
-        document.getElementById('carSelect').value = car;
+        selectCar(car);
         document.getElementById('destInput').value = destination;
         document.getElementById('dateInput').value = datetime;
         
-        // Cambiamos textos
-        document.getElementById('formTitle').innerText = "✏️ Editando Reserva";
-        document.getElementById('bookBtn').innerText = "Guardar Cambios";
+        document.getElementById('formTitle').innerText = "Edit Booking";
+        document.getElementById('bookBtn').innerText = "Update Booking";
         
-        checkInsurance();
-        switchTab('book'); // Vamos a la pestaña de reserva
+        switchTab('book');
     }
 
-    // ENVIAR FORMULARIO (SIRVE PARA CREAR Y PARA EDITAR)
     async function submitBooking() {
         const user = document.getElementById('currentUser').value;
         const car = document.getElementById('carSelect').value;
         const destination = document.getElementById('destInput').value;
         const datetime = document.getElementById('dateInput').value;
 
-        if (!destination || !datetime) return alert("Faltan datos");
+        if (!destination || !datetime || !car) return alert("Faltan datos");
 
-        // Si hay editingId, hacemos PUT (actualizar). Si no, POST (crear nuevo).
         const method = editingId ? 'PUT' : 'POST';
         const url = editingId ? `/api/bookings/${editingId}` : '/api/bookings';
 
@@ -159,34 +368,49 @@
         });
 
         if (res.ok) {
-            alert(editingId ? "¡Cambios guardados!" : "¡Reserva guardada!");
             resetForm();
             switchTab('home');
         } else {
-            alert("Error: No tienes permiso para este coche");
+            alert("Error al guardar");
         }
     }
 
     async function loadBookings() {
-        const list = document.getElementById('bookingsList');
+        const listHome = document.getElementById('bookingsList');
+        const listCal = document.getElementById('calendarList');
         const res = await fetch('/api/bookings');
         const bookings = await res.json();
-        list.innerHTML = bookings.length ? '' : 'No hay viajes.';
+        
+        listHome.innerHTML = bookings.length ? '' : '<p>No tienes viajes previstos.</p>';
+        listCal.innerHTML = bookings.length ? '' : '<p>Calendario vacío.</p>';
         
         bookings.forEach(b => {
-            const fecha = new Date(b.datetime).toLocaleString('es-ES', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute:'2-digit' });
+            const dateObj = new Date(b.datetime);
+            const dateOnly = dateObj.toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' });
+            const timeOnly = dateObj.toLocaleTimeString('es-ES', { hour: '2-digit', minute:'2-digit' });
             
-            // Añadimos los botones de Editar y Borrar
-            list.innerHTML += `<div class="card">
-                <small style="color:var(--primary); font-weight:bold;">${fecha}</small><br>
-                <strong>${b.user_name}</strong> - ${b.car}<br>
-                📍 ${b.destination}
-                
-                <div class="card-actions">
-                    <button class="btn-edit" onclick="editBooking(${b.id}, '${b.car}', '${b.destination}', '${b.datetime}', '${b.user_name}')">✏️ Editar</button>
-                    <button class="btn-delete" onclick="deleteBooking(${b.id})">🗑️ Borrar</button>
+            const htmlBlock = `
+                <div class="timeline-item">
+                    <div class="timeline-icon"><span class="material-symbols-outlined" style="font-size:16px;">person</span></div>
+                    <div class="trip-header">
+                        <div>
+                            <div class="trip-user">${b.user_name}</div>
+                            <div class="trip-dest">${b.destination}</div>
+                            <div class="trip-car"><span class="material-symbols-outlined" style="font-size:14px;">directions_car</span> ${b.car}</div>
+                        </div>
+                        <div class="trip-time">
+                            <div style="color:var(--text-dark);">${dateOnly}</div>
+                            ${timeOnly}
+                        </div>
+                    </div>
+                    <div class="trip-actions">
+                        <button class="action-btn" onclick="editBooking(${b.id}, '${b.car}', '${b.destination}', '${b.datetime}', '${b.user_name}')"><span class="material-symbols-outlined">edit</span> Edit</button>
+                        <button class="action-btn" onclick="deleteBooking(${b.id})" style="color: var(--danger);"><span class="material-symbols-outlined">delete</span> Cancel</button>
+                    </div>
                 </div>
-            </div>`;
+            `;
+            listHome.innerHTML += htmlBlock;
+            listCal.innerHTML += htmlBlock;
         });
     }
 
@@ -195,24 +419,31 @@
         document.getElementById('destInput').value = '';
         document.getElementById('dateInput').value = '';
         document.getElementById('carSelect').value = '';
-        document.getElementById('formTitle').innerText = "Nueva Reserva";
-        document.getElementById('bookBtn').innerText = "Confirmar Reserva";
+        document.getElementById('box-Zafira').classList.remove('active');
+        document.getElementById('box-Peugeot').classList.remove('active');
+        document.getElementById('formTitle').innerText = "New Booking";
+        document.getElementById('bookBtn').innerText = "Confirm Booking";
         document.getElementById('bookBtn').disabled = true;
+        document.getElementById('insuranceAlert').style.display = 'none';
     }
 
-    function switchTab(tabId) {
+    function switchTab(tabId, preSelectCar = null) {
+        // Ocultar todas las secciones y quitar estilos activos
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        
+        // Mostrar la nueva sección
         document.getElementById('tab-' + tabId).classList.add('active');
         
-        // Colorear el icono del menú inferior correcto
-        if(tabId === 'home') {
-            document.querySelectorAll('.nav-item')[0].classList.add('active');
-            loadBookings();
-        } else {
-            document.querySelectorAll('.nav-item')[1].classList.add('active');
-            // Si entramos a reservar desde el menú y no estamos editando, limpiamos el formulario
-            if(!editingId) resetForm();
+        // Marcar icono inferior correspondiente
+        const navMap = { 'home': 0, 'calendar': 1, 'book': 2, 'settings': 3 };
+        document.querySelectorAll('.nav-item')[navMap[tabId]].classList.add('active');
+        
+        // Lógicas específicas de cada pestaña
+        if(tabId === 'home' || tabId === 'calendar') loadBookings();
+        if(tabId === 'book') {
+            if(!editingId && !preSelectCar) resetForm();
+            if(preSelectCar) selectCar(preSelectCar); // Si venimos de "Book Now" en el Home
         }
     }
 
