@@ -39,7 +39,7 @@
             border: none; padding: 16px; border-radius: 10px;
             font-size: 16px; font-weight: bold; cursor: pointer;
         }
-        button:disabled { background: #ccc; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
         .alert {
             background: var(--danger-bg); color: var(--danger);
             padding: 15px; border-radius: 10px; margin-bottom: 20px;
@@ -90,7 +90,7 @@
 
             <div id="insuranceAlert" class="alert">
                 ⚠️ <strong>Seguro Requerido</strong><br>
-                No estás en el seguro de este coche. Habla con Yolanda para que te incluya.
+                No estás en la póliza de este coche. Habla con Yolanda para que te incluya.
             </div>
 
             <label>¿A dónde vas?</label>
@@ -122,7 +122,7 @@
         async function loadPermissions() {
             const res = await fetch('/api/permissions');
             permissions = await res.json();
-            checkInsurance(); // Validar al cargar
+            checkInsurance(); 
         }
 
         function checkInsurance() {
@@ -133,7 +133,8 @@
 
             if (!car) { btn.disabled = true; return; }
 
-            const canDrive = permissions.find(p => p.car === car && p.user === user);
+            // AQUÍ ESTABA EL ERROR: Cambiado p.user a p.user_name para Supabase
+            const canDrive = permissions.find(p => p.car === car && p.user_name === user);
 
             if (!canDrive) {
                 alertBox.style.display = 'block';
@@ -161,7 +162,12 @@
             if (res.ok) {
                 alert("¡Reservado!");
                 document.getElementById('destInput').value = '';
+                document.getElementById('carSelect').value = '';
+                checkInsurance(); // Resetea el botón tras reservar
                 switchTab('home');
+            } else {
+                const data = await res.json();
+                alert("Error: " + data.error);
             }
         }
 
@@ -176,7 +182,7 @@
                 list.innerHTML += `
                     <div class="card">
                         <small style="color:var(--primary)">${fecha}</small><br>
-                        <strong>${b.user}</strong> usará el <strong>${b.car}</strong><br>
+                        <strong>${b.user_name}</strong> usará el <strong>${b.car}</strong><br>
                         📍 ${b.destination}
                     </div>
                 `;
