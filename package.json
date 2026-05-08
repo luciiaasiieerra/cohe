@@ -1,7 +1,6 @@
 {
   "name": "autofamily",
   "version": "1.0.0",
-  "description": "App familiar para turnar los coches",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
