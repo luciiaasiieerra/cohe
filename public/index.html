@@ -119,14 +119,14 @@
         <h1 class="section-title">Próximos viajes</h1>
 
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px;">
-            <span style="color: var(--primary); font-weight: bold; font-size: 14px;" onclick="switchTab('calendar')">View Calendar</span>
+            <span style="color: var(--primary); font-weight: bold; font-size: 14px;" onclick="switchTab('calendar')"></span>
         </div>
         
         <div class="timeline" id="bookingsList">Cargando agenda...</div>
     </div>
 
     <div id="tab-book" class="section">
-        <h1 class="section-title" id="formTitle">New Booking</h1>
+        <h1 class="section-title" id="formTitle">Nueva Reserva</h1>
         <p class="section-subtitle">Reserva un vehículo para tu próximo viaje.</p>
 
         <label>Which car?</label>
@@ -143,21 +143,21 @@
         <div id="insuranceAlert" class="alert">
             <span class="material-symbols-outlined">warning</span>
             <div>
-                <strong>Insurance Required</strong><br>
-                Actualmente no estás listada en el seguro de este coche. Habla con Yolanda para que actualice la póliza.
+                <strong>No tienes seguro</strong><br>
+                No tienes seguro para este coche. Habla con mamá para que lo actualice.
             </div>
         </div>
 
-        <label>Where are you going?</label>
-        <input type="text" id="destInput" placeholder="e.g. Manchester Airport">
+        <label>¿A dónde vas?</label>
+        <input type="text" id="destInput" placeholder="e.j. Gym">
         
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
             <div>
-                <label>Start Date & Time</label>
+                <label>A que hora sales</label>
                 <input type="datetime-local" id="dateInput">
             </div>
             <div>
-                <label>End Date & Time</label>
+                <label>A que hora vuelves</label>
                 <input type="datetime-local" id="dateReturnInput">
             </div>
         </div>
@@ -174,8 +174,7 @@
             <option value="sunday">Todos los Domingos</option>
         </select>
         
-        <button id="bookBtn" class="btn-main" onclick="submitBooking()" disabled>Confirm Booking</button>
-        <button class="btn-main" onclick="switchTab('home')" style="background: transparent; color: var(--text-dark); border: 2px solid #ccc; margin-top: 15px;">Cancel</button>
+        <button id="bookBtn" class="btn-main" onclick="submitBooking()" disabled>Confirmar Reserva</button>
     </div>
 
     <div id="tab-calendar" class="section">
@@ -198,17 +197,16 @@
 
     <div id="tab-settings" class="section">
         <h1 class="section-title">Settings</h1>
-        <p class="section-subtitle">Fleet & Insurance</p>
         
         <div class="car-card">
-            <h3 style="margin-bottom: 15px;">Zafira <span class="status-badge" style="float:right;">Active Policy</span></h3>
+            <h3 style="margin-bottom: 15px;">Zafira <span class="status-badge" style="float:right;"></span></h3>
             <div class="toggle-row"><span>Yolanda</span> <label class="switch"><input type="checkbox" id="Zafira-Yolanda" onchange="togglePerm('Zafira','Yolanda')"><span class="slider"></span></label></div>
             <div class="toggle-row"><span>Alba</span> <label class="switch"><input type="checkbox" id="Zafira-Alba" onchange="togglePerm('Zafira','Alba')"><span class="slider"></span></label></div>
             <div class="toggle-row"><span>Lucía</span> <label class="switch"><input type="checkbox" id="Zafira-Lucia" onchange="togglePerm('Zafira','Lucia')"><span class="slider"></span></label></div>
         </div>
 
         <div class="car-card">
-            <h3 style="margin-bottom: 15px;">Peugeot <span class="status-badge" style="float:right; background:#E8F5E9; color:#2E7D32;">Shared Fleet</span></h3>
+            <h3 style="margin-bottom: 15px;">Peugeot <span class="status-badge" style="float:right; background:#E8F5E9; color:#2E7D32;"></span></h3>
             <div class="toggle-row"><span>Yolanda</span> <label class="switch"><input type="checkbox" id="Peugeot-Yolanda" onchange="togglePerm('Peugeot','Yolanda')"><span class="slider"></span></label></div>
             <div class="toggle-row"><span>Alba</span> <label class="switch"><input type="checkbox" id="Peugeot-Alba" onchange="togglePerm('Peugeot','Alba')"><span class="slider"></span></label></div>
             <div class="toggle-row"><span>Lucía</span> <label class="switch"><input type="checkbox" id="Peugeot-Lucia" onchange="togglePerm('Peugeot','Lucia')"><span class="slider"></span></label></div>
@@ -218,8 +216,8 @@
 
 <div class="bottom-nav">
     <div class="nav-item active" onclick="switchTab('home')"><span class="material-symbols-outlined">home</span> Inicio</div>
-    <div class="nav-item" onclick="switchTab('calendar')"><span class="material-symbols-outlined">calendar_month</span> Calendar</div>
-    <div class="nav-item" onclick="switchTab('book')"><span class="material-symbols-outlined">directions_car</span> Book</div>
+    <div class="nav-item" onclick="switchTab('calendar')"><span class="material-symbols-outlined">calendar_month</span> Calendario</div>
+    <div class="nav-item" onclick="switchTab('book')"><span class="material-symbols-outlined">directions_car</span> Reservar</div>
     <div class="nav-item" onclick="switchTab('settings')"><span class="material-symbols-outlined">settings</span> Settings</div>
 </div>
 
