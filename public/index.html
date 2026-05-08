@@ -7,50 +7,56 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,1,0" />
     <style>
         :root { 
-            --primary: #006D77; --primary-light: #E0F2F1; --secondary: #83C5BE;
-            --bg: #F8F9FA; --text-dark: #112A46; --text-light: #6C757D;
-            --danger: #B71C1C; --danger-bg: #FFEBEE; --white: #FFFFFF;
-            --color-yolanda: #006D77; --color-alba: #E76F51; --color-lucia: #8338EC;
+            --primary: #0077B6; --bg: #F8F9FA; --white: #FFFFFF;
+            --text-dark: #023E8A; --text-light: #6C757D;
+            --danger: #B71C1C;
+            /* GAMA DE AZULES POR PERSONA */
+            --color-yolanda: #03045E; /* Azul Marino */
+            --color-alba: #0077B6;    /* Azul Océano */
+            --color-lucia: #90E0EF;   /* Celeste Claro */
         }
         body { font-family: sans-serif; background: var(--bg); margin: 0; padding-bottom: 90px; color: var(--text-dark); }
         header { background: var(--bg); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
-        .header-title { display: flex; align-items: center; gap: 10px; font-size: 22px; font-weight: 800; color: var(--primary); }
-        .user-switcher select { background: var(--primary-light); color: var(--primary); border: none; padding: 5px 10px; border-radius: 20px; font-weight: bold; outline: none; }
+        .header-title { font-size: 22px; font-weight: 800; color: var(--primary); }
+        .user-switcher select { background: #CAF0F8; color: #023E8A; border: none; padding: 5px 12px; border-radius: 20px; font-weight: bold; outline: none; }
         .container { padding: 0 20px; }
-        .section-title { font-size: 28px; font-weight: 800; margin-bottom: 5px; }
-        .section-subtitle { color: var(--text-light); font-size: 14px; margin-bottom: 20px; }
+        .section-title { font-size: 28px; font-weight: 800; margin-bottom: 15px; }
         .car-card { background: var(--white); border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; padding: 20px; }
         
-        /* TIMELINE */
-        .timeline { margin-top: 10px; padding-left: 10px; border-left: 2px solid #E9ECEF; }
-        .timeline-item { position: relative; padding-left: 25px; margin-bottom: 25px; }
-        .timeline-icon { position: absolute; left: -16px; top: 0; width: 30px; height: 30px; color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 16px; border: 3px solid var(--bg); font-weight: bold;}
-        .trip-header { display: flex; justify-content: space-between; align-items: flex-start; }
-        .trip-actions { margin-top: 10px; display: flex; gap: 10px; }
-        .action-btn { background: #f0f0f0; border: none; font-size: 12px; font-weight: bold; border-radius: 8px; cursor: pointer; padding: 6px 12px; display: flex; align-items: center; gap: 4px; }
-        
-        /* CALENDARIO */
-        .calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-weight: bold;}
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
-        .cal-day { padding: 10px 0; border-radius: 8px; font-size: 14px; position: relative; background: var(--white); cursor: pointer; }
-        .cal-day.active-day { background: var(--primary); color: white; }
-        .cal-day.has-trip::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 6px; height: 6px; background: currentColor; border-radius: 50%; }
+        /* FEED DE INICIO */
+        .timeline-item { position: relative; padding-left: 25px; margin-bottom: 25px; border-left: 2px solid #E9ECEF; }
+        .timeline-icon { position: absolute; left: -11px; top: 0; width: 20px; height: 20px; border-radius: 50%; border: 3px solid var(--bg); }
+        .trip-actions { display: flex; gap: 10px; margin-top: 10px; }
+        .btn-act { background: #eee; border: none; padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
 
-        .hour-row { display: flex; min-height: 45px; border-bottom: 1px solid #eee; }
-        .hour-label { width: 50px; font-size: 11px; color: var(--text-light); text-align: right; padding-right: 10px; border-right: 2px solid #E9ECEF;}
-        .hour-slot { flex: 1; padding: 2px 10px; display: flex; flex-direction: column; gap: 2px; position: relative;}
-        .trip-block { padding: 6px 10px; border-radius: 6px; font-size: 12px; border-left: 4px solid; margin-bottom: 2px;}
+        /* CALENDARIO */
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; }
+        .cal-day { padding: 10px 0; border-radius: 8px; background: white; cursor: pointer; font-size: 14px; position: relative; }
+        .cal-day.active-day { background: var(--primary); color: white; }
+        .cal-day.has-trip::after { content: ''; position: absolute; bottom: 4px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; background: currentColor; border-radius: 50%; }
+        
+        .hour-row { display: flex; min-height: 50px; border-bottom: 1px solid #eee; }
+        .hour-label { width: 50px; font-size: 11px; color: gray; text-align: right; padding-right: 10px; border-right: 2px solid #eee; }
+        .trip-block { padding: 8px; border-radius: 6px; font-size: 12px; border-left: 5px solid; margin: 2px 0; }
+
+        /* AJUSTES */
+        .toggle-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .switch { position: relative; width: 40px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background: #ccc; border-radius: 20px; transition: .4s; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: .4s; }
+        input:checked + .slider { background: var(--primary); }
+        input:checked + .slider:before { transform: translateX(20px); }
 
         /* FORM */
-        .car-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .car-select-box { background: var(--white); border: 2px solid transparent; border-radius: 12px; padding: 15px; text-align: center; cursor: pointer; }
-        .car-select-box.active { border-color: var(--primary); background: #F0FAF9; }
-        input, select.form-input { width: 100%; padding: 12px; margin: 8px 0 15px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 15px; box-sizing: border-box; }
-        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 30px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        .btn-main:disabled { background: #bbb; }
+        .car-selector-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .car-select-box { background: white; padding: 15px; border-radius: 12px; text-align: center; border: 2px solid transparent; cursor: pointer; }
+        .car-select-box.active { border-color: var(--primary); background: #CAF0F8; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border-radius: 8px; border: 1px solid #ccc; }
+        .btn-main { width: 100%; padding: 16px; background: var(--primary); color: white; border: none; border-radius: 30px; font-weight: bold; cursor: pointer; }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--white); display: flex; justify-content: space-around; padding: 15px 0 25px 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.05); border-radius: 20px 20px 0 0; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-light); cursor: pointer; font-size: 12px; gap: 4px; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 15px 0 25px 0; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: var(--text-light); font-size: 11px; cursor: pointer; }
         .nav-item.active { color: var(--primary); font-weight: bold; }
         .section { display: none; }
         .section.active { display: block; }
@@ -59,9 +65,9 @@
 <body>
 
 <header>
-    <div class="header-title"><span style="font-size: 28px;">🚗</span> AutoFamily</div>
+    <div class="header-title">AutoFamily</div>
     <div class="user-switcher">
-        <select id="currentUser" onchange="userChanged()">
+        <select id="currentUser" onchange="loadBookings()">
             <option value="Lucia">Lucía</option>
             <option value="Alba">Alba</option>
             <option value="Yolanda">Yolanda</option>
@@ -72,234 +78,149 @@
 <div class="container">
     
     <div id="tab-home" class="section active">
-        <h1 class="section-title">Próximos Viajes</h1>
-        <div class="timeline" id="bookingsList">Cargando...</div>
-    </div>
-
-    <div id="tab-book" class="section">
-        <h1 class="section-title" id="formTitle">Nueva Reserva</h1>
-        <div class="car-selector-grid">
-            <div class="car-select-box" id="box-Zafira" onclick="selectCar('Zafira')">🚗<br><b>Zafira</b></div>
-            <div class="car-select-box" id="box-Peugeot" onclick="selectCar('Peugeot')">⚡<br><b>Peugeot</b></div>
-        </div>
-        <input type="hidden" id="carSelect">
-        
-        <label style="display:block; margin-top:15px; font-weight:bold;">¿A dónde vas?</label>
-        <input type="text" id="destInput" placeholder="Ej: Universidad, Gimnasio...">
-        
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <div>
-                <label style="font-weight:bold;">Salida</label>
-                <input type="datetime-local" id="dateInput">
-            </div>
-            <div>
-                <label style="font-weight:bold;">Vuelta prevista</label>
-                <input type="datetime-local" id="dateReturnInput">
-            </div>
-        </div>
-
-        <label style="font-weight:bold;">¿Viaje Permanente?</label>
-        <select id="recurrenceInput" class="form-input">
-            <option value="none">No, solo esta vez</option>
-            <option value="monday">Todos los Lunes</option>
-            <option value="tuesday">Todos los Martes</option>
-            <option value="wednesday">Todos los Miércoles</option>
-            <option value="thursday">Todos los Jueves</option>
-            <option value="friday">Todos los Viernes</option>
-            <option value="saturday">Todos los Sábados</option>
-            <option value="sunday">Todos los Domingos</option>
-        </select>
-
-        <button id="bookBtn" class="btn-main" onclick="submitBooking()" disabled>Confirmar Reserva</button>
-        <button class="btn-main" onclick="switchTab('home')" style="background:transparent; color:#333; border: 1px solid #ccc; margin-top:10px;">Cancelar</button>
+        <h1 class="section-title">Feed de Viajes</h1>
+        <div id="bookingsList">Cargando...</div>
     </div>
 
     <div id="tab-calendar" class="section">
         <h1 class="section-title">Calendario</h1>
         <div class="car-card">
-            <div class="calendar-header">
-                <button onclick="changeMonth(-1)">◀</button>
-                <span id="monthLabel"></span>
-                <button onclick="changeMonth(1)">▶</button>
-            </div>
             <div class="calendar-grid" id="calGrid"></div>
         </div>
-        <h3 id="selectedDateLabel" style="margin-top:20px;">Agenda diaria</h3>
-        <div id="calendarList"></div>
+        <h3 id="selectedDateLabel">Selecciona un día</h3>
+        <div id="hourlyList"></div>
+    </div>
+
+    <div id="tab-book" class="section">
+        <h1 class="section-title" id="formTitle">Reservar</h1>
+        <div class="car-selector-grid">
+            <div class="car-select-box" id="box-Zafira" onclick="selectCar('Zafira')">🚗 Zafira</div>
+            <div class="car-select-box" id="box-Peugeot" onclick="selectCar('Peugeot')">⚡ Peugeot</div>
+        </div>
+        <input type="hidden" id="carSelect">
+        <label>¿A dónde vas?</label>
+        <input type="text" id="destInput">
+        <label>Salida</label><input type="datetime-local" id="dateInput">
+        <label>Vuelta</label><input type="datetime-local" id="dateReturnInput">
+        <label>¿Es permanente?</label>
+        <select id="recurrenceInput">
+            <option value="none">No</option>
+            <option value="monday">Lunes</option><option value="tuesday">Martes</option>
+            <option value="wednesday">Miércoles</option><option value="thursday">Jueves</option>
+            <option value="friday">Viernes</option>
+        </select>
+        <button id="bookBtn" class="btn-main" onclick="submitBooking()" style="margin-top:20px;">Confirmar</button>
+    </div>
+
+    <div id="tab-settings" class="section">
+        <h1 class="section-title">Ajustes</h1>
+        <div class="car-card">
+            <h3>Seguro Zafira</h3>
+            <div class="toggle-row"><span>Yolanda</span> <label class="switch"><input type="checkbox" id="Zafira-Yolanda" onchange="togglePerm('Zafira','Yolanda')"><span class="slider"></span></label></div>
+            <div class="toggle-row"><span>Alba</span> <label class="switch"><input type="checkbox" id="Zafira-Alba" onchange="togglePerm('Zafira','Alba')"><span class="slider"></span></label></div>
+            <div class="toggle-row"><span>Lucía</span> <label class="switch"><input type="checkbox" id="Zafira-Lucia" onchange="togglePerm('Zafira','Lucia')"><span class="slider"></span></label></div>
+        </div>
+        <div class="car-card">
+            <h3>Seguro Peugeot</h3>
+            <div class="toggle-row"><span>Yolanda</span> <label class="switch"><input type="checkbox" id="Peugeot-Yolanda" onchange="togglePerm('Peugeot','Yolanda')"><span class="slider"></span></label></div>
+            <div class="toggle-row"><span>Alba</span> <label class="switch"><input type="checkbox" id="Peugeot-Alba" onchange="togglePerm('Peugeot','Alba')"><span class="slider"></span></label></div>
+            <div class="toggle-row"><span>Lucía</span> <label class="switch"><input type="checkbox" id="Peugeot-Lucia" onchange="togglePerm('Peugeot','Lucia')"><span class="slider"></span></label></div>
+        </div>
     </div>
 </div>
 
 <div class="bottom-nav">
-    <div class="nav-item active" onclick="switchTab('home')"><span class="material-symbols-outlined">home</span> Inicio</div>
-    <div class="nav-item" onclick="switchTab('calendar')"><span class="material-symbols-outlined">calendar_month</span> Calendario</div>
-    <div class="nav-item" onclick="switchTab('book')"><span class="material-symbols-outlined">directions_car</span> Reservar</div>
+    <div class="nav-item active" onclick="switchTab('home')"><span class="material-symbols-outlined">home</span>Inicio</div>
+    <div class="nav-item" onclick="switchTab('calendar')"><span class="material-symbols-outlined">calendar_month</span>Calendario</div>
+    <div class="nav-item" onclick="switchTab('book')"><span class="material-symbols-outlined">add_circle</span>Reservar</div>
+    <div class="nav-item" onclick="switchTab('settings')"><span class="material-symbols-outlined">settings</span>Ajustes</div>
 </div>
 
 <script>
-    let permissions = [];
-    let allBookings = [];
-    let editingId = null;
-    let currentDate = new Date();
+    let permissions = [], allBookings = [], editingId = null;
     let selectedDateStr = new Date().toISOString().split('T')[0];
-    const userColors = { 'Yolanda': 'var(--color-yolanda)', 'Alba': 'var(--color-alba)', 'Lucia': 'var(--color-lucia)' };
+    const userColors = { 'Yolanda': '#03045E', 'Alba': '#0077B6', 'Lucia': '#90E0EF' };
 
     async function loadData() {
-        const res = await fetch('/api/permissions');
-        permissions = await res.json();
-        loadBookings();
+        const res = await fetch('/api/permissions'); permissions = await res.json();
+        updateSettingsUI(); loadBookings(); renderCalendar();
     }
 
-    function userChanged() { checkInsurance(); renderHomeFeed(); }
-
-    function selectCar(car) {
-        document.getElementById('carSelect').value = car;
-        document.querySelectorAll('.car-select-box').forEach(b => b.classList.remove('active'));
-        document.getElementById('box-' + car).classList.add('active');
-        checkInsurance();
+    function updateSettingsUI() {
+        document.querySelectorAll('input[type=checkbox]').forEach(cb => cb.checked = false);
+        permissions.forEach(p => { const el = document.getElementById(`${p.car}-${p.user_name}`); if(el) el.checked = true; });
     }
 
-    function checkInsurance() {
-        const user = document.getElementById('currentUser').value;
-        const car = document.getElementById('carSelect').value;
-        if(!car) return;
-        const canDrive = permissions.some(p => p.car === car && p.user_name === user);
-        document.getElementById('bookBtn').disabled = !canDrive;
+    async function togglePerm(car, user) {
+        const auth = document.getElementById(`${car}-${user}`).checked;
+        await fetch('/api/permissions', { method:'PUT', headers:{'Content-Type':'application/json'}, body:JSON.stringify({car, user, authorized:auth}) });
+        loadData();
     }
+
+    function selectCar(c) { document.getElementById('carSelect').value = c; document.querySelectorAll('.car-select-box').forEach(b=>b.classList.remove('active')); document.getElementById('box-'+c).classList.add('active'); }
 
     async function submitBooking() {
-        const payload = {
-            user: document.getElementById('currentUser').value,
-            car: document.getElementById('carSelect').value,
-            destination: document.getElementById('destInput').value,
-            datetime: document.getElementById('dateInput').value,
-            return_datetime: document.getElementById('dateReturnInput').value,
-            recurrence: document.getElementById('recurrenceInput').value
-        };
-
-        const method = editingId ? 'PUT' : 'POST';
-        const url = editingId ? `/api/bookings/${editingId}` : '/api/bookings';
-
-        await fetch(url, {
-            method, headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
-        resetForm();
-        switchTab('home');
-    }
-
-    async function toggleJoin(id) {
-        await fetch(`/api/bookings/${id}/join`, {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user: document.getElementById('currentUser').value })
-        });
-        loadBookings();
-    }
-
-    async function deleteBooking(id) {
-        if(confirm("¿Borrar?")) { await fetch(`/api/bookings/${id}`, { method: 'DELETE' }); loadBookings(); }
-    }
-
-    function editBooking(id, car, dest, dt, rdt, rec, user) {
-        editingId = id;
-        document.getElementById('currentUser').value = user;
-        selectCar(car);
-        document.getElementById('destInput').value = dest;
-        document.getElementById('dateInput').value = dt;
-        document.getElementById('dateReturnInput').value = rdt;
-        document.getElementById('recurrenceInput').value = rec;
-        document.getElementById('formTitle').innerText = "Editar Reserva";
-        switchTab('book');
+        const payload = { user: document.getElementById('currentUser').value, car: document.getElementById('carSelect').value, destination: document.getElementById('destInput').value, datetime: document.getElementById('dateInput').value, return_datetime: document.getElementById('dateReturnInput').value, recurrence: document.getElementById('recurrenceInput').value };
+        await fetch(editingId ? `/api/bookings/${editingId}` : '/api/bookings', { method: editingId ? 'PUT' : 'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
+        editingId = null; switchTab('home');
     }
 
     async function loadBookings() {
-        const res = await fetch('/api/bookings');
-        allBookings = await res.json();
-        renderHomeFeed();
-        renderCalendar();
+        const res = await fetch('/api/bookings'); allBookings = await res.json();
+        renderHome(); renderCalendar();
     }
 
-    function renderHomeFeed() {
-        const list = document.getElementById('bookingsList');
-        const currentUser = document.getElementById('currentUser').value;
-        list.innerHTML = allBookings.length ? '' : 'No hay viajes.';
-
-        allBookings.forEach(b => {
-            const dt = new Date(b.datetime);
-            const rdt = b.return_datetime ? new Date(b.return_datetime) : null;
-            const isJoined = (b.passengers || '').split(',').includes(currentUser);
-            const color = userColors[b.user_name];
-
-            list.innerHTML += `
-                <div class="timeline-item">
-                    <div class="timeline-icon" style="background:${color}">${b.user_name[0]}</div>
-                    <div class="trip-header">
-                        <div>
-                            <div style="font-weight:bold; color:${color}">${b.user_name} ${b.recurrence !== 'none' ? '🔄' : ''}</div>
-                            <div style="font-size:15px">${b.destination}</div>
-                            <small style="color:gray">🚗 ${b.car} | 👥 ${b.passengers || 'Solo'}</small>
-                        </div>
-                        <div style="text-align:right; font-size:12px">
-                            <b>${dt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</b>
-                            ${rdt ? `<br><span style="color:gray">vuelve ${rdt.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="trip-actions">
-                        ${b.user_name === currentUser ? 
-                            `<button class="action-btn" onclick="editBooking(${b.id},'${b.car}','${b.destination}','${b.datetime}','${b.return_datetime}','${b.recurrence}','${b.user_name}')">Editar</button>
-                             <button class="action-btn" style="color:red" onclick="deleteBooking(${b.id})">Borrar</button>` :
-                            `<button class="action-btn" onclick="toggleJoin(${b.id})">${isJoined ? 'Bajarme' : 'Unirme'}</button>`
-                        }
-                    </div>
-                </div>`;
-        });
+    function renderHome() {
+        const list = document.getElementById('bookingsList'); const user = document.getElementById('currentUser').value;
+        list.innerHTML = allBookings.map(b => {
+            const isJoined = (b.passengers||'').split(',').includes(user);
+            return `<div class="timeline-item">
+                <div class="timeline-icon" style="background:${userColors[b.user_name]}"></div>
+                <div style="font-weight:bold; color:${userColors[b.user_name]}">${b.user_name} ${b.recurrence!=='none'?'🔄':''}</div>
+                <div>${b.destination} (${b.car})</div>
+                <div class="trip-actions">
+                    ${b.user_name === user ? `<button class="btn-act" onclick="deleteBooking(${b.id})">Borrar</button>` : `<button class="btn-act" onclick="toggleJoin(${b.id})">${isJoined?'Bajarme':'Unirme'}</button>`}
+                </div>
+            </div>`;
+        }).join('');
     }
+
+    async function toggleJoin(id) {
+        await fetch(`/api/bookings/${id}/join`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({user: document.getElementById('currentUser').value}) });
+        loadBookings();
+    }
+
+    async function deleteBooking(id) { if(confirm("¿Borrar?")) { await fetch(`/api/bookings/${id}`, {method:'DELETE'}); loadBookings(); } }
 
     function renderCalendar() {
-        const year = currentDate.getFullYear(), month = currentDate.getMonth();
-        document.getElementById('monthLabel').innerText = new Date(year, month).toLocaleDateString('es-ES', {month:'long', year:'numeric'}).toUpperCase();
-        
-        let gridHtml = '';
-        const daysInMonth = new Date(year, month + 1, 0).getDate();
-        for (let day = 1; day <= daysInMonth; day++) {
-            const dStr = `${year}-${String(month+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
-            const hasT = allBookings.some(b => b.datetime.startsWith(dStr) || (b.recurrence !== 'none' && new Date(dStr).getDay() === ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'].indexOf(b.recurrence)));
-            gridHtml += `<div class="cal-day ${hasT?'has-trip':''} ${dStr===selectedDateStr?'active-day':''}" onclick="selectedDateStr='${dStr}';renderCalendar()">${day}</div>`;
+        const now = new Date(); const days = new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
+        let html = '<div class="cal-day-name">L</div><div class="cal-day-name">M</div><div class="cal-day-name">X</div><div class="cal-day-name">J</div><div class="cal-day-name">V</div><div class="cal-day-name">S</div><div class="cal-day-name">D</div>';
+        for(let i=1; i<=days; i++) {
+            const dStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+            const hasT = allBookings.some(b => b.datetime.startsWith(dStr));
+            html += `<div class="cal-day ${hasT?'has-trip':''} ${dStr===selectedDateStr?'active-day':''}" onclick="selectedDateStr='${dStr}';renderCalendar()">${i}</div>`;
         }
-        document.getElementById('calGrid').innerHTML = gridHtml;
-        renderHourlyView(selectedDateStr);
+        document.getElementById('calGrid').innerHTML = html;
+        renderHourly(selectedDateStr);
     }
 
-    function renderHourlyView(dStr) {
-        const calList = document.getElementById('calendarList');
-        const dayOfWeek = ['sunday','monday','tuesday','wednesday','thursday','friday','saturday'][new Date(dStr).getDay()];
-        
-        // Filtramos viajes de ese día o permanentes de ese día de la semana
-        const trips = allBookings.filter(b => b.datetime.startsWith(dStr) || b.recurrence === dayOfWeek);
-        
-        let html = '<div class="hourly-schedule">';
-        for(let i=7; i<=23; i++) {
-            html += `<div class="hour-row"><div class="hour-label">${i}:00</div><div class="hour-slot">`;
-            
-            trips.forEach(b => {
-                const startH = new Date(b.datetime).getHours();
-                const endH = b.return_datetime ? new Date(b.return_datetime).getHours() : startH + 1;
-                
-                // Si la hora actual i está dentro del rango del viaje, dibujamos el bloque
-                if (i >= startH && i <= endH) {
-                    const color = userColors[b.user_name];
-                    html += `<div class="trip-block" style="border-left-color:${color}; background:color-mix(in srgb, ${color} 15%, transparent)">
-                                <b>${b.user_name}</b>: ${b.destination} (${b.car})
-                             </div>`;
+    function renderHourly(dStr) {
+        const dayName = new Date(dStr).toLocaleDateString('es-ES', {weekday:'long', day:'numeric', month:'short'});
+        document.getElementById('selectedDateLabel').innerText = dayName.toUpperCase();
+        let html = '';
+        for(let h=7; h<=22; h++) {
+            html += `<div class="hour-row"><div class="hour-label">${h}:00</div><div class="hour-slot">`;
+            allBookings.filter(b => b.datetime.startsWith(dStr)).forEach(b => {
+                if(new Date(b.datetime).getHours() <= h && (b.return_datetime ? new Date(b.return_datetime).getHours() >= h : new Date(b.datetime).getHours() === h)) {
+                    html += `<div class="trip-block" style="border-left-color:${userColors[b.user_name]}; background:color-mix(in srgb, ${userColors[b.user_name]} 20%, transparent)"><b>${b.user_name}</b>: ${b.destination}</div>`;
                 }
             });
             html += `</div></div>`;
         }
-        calList.innerHTML = html + '</div>';
+        document.getElementById('hourlyList').innerHTML = html;
     }
 
-    function changeMonth(dir) { currentDate.setMonth(currentDate.getMonth()+dir); renderCalendar(); }
-    function resetForm() { editingId = null; document.querySelectorAll('input').forEach(i=>i.value=''); document.getElementById('formTitle').innerText="Nueva Reserva"; }
-    function switchTab(t) { document.querySelectorAll('.section, .nav-item').forEach(e=>e.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); loadBookings(); }
+    function switchTab(t) { document.querySelectorAll('.section, .nav-item').forEach(e=>e.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); const idx = {'home':0,'calendar':1,'book':2,'settings':3}[t]; document.querySelectorAll('.nav-item')[idx].classList.add('active'); loadBookings(); }
 
     loadData();
 </script>
